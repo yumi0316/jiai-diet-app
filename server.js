@@ -166,6 +166,8 @@ weekPlanは月曜日〜日曜日の7日分を作成してください。`;
   }
 });
 
+app.get('/health', (req, res) => res.json({ status: 'ok' }));
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🌸 自愛ダイエットアプリが起動しました → http://localhost:${PORT}`);

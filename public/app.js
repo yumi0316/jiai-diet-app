@@ -121,6 +121,10 @@ async function generateMealPlan() {
 
   tipEl.style.transition = 'opacity 0.3s';
 
+  await fetchMealPlan(params, tipInterval, 0);
+}
+
+async function fetchMealPlan(params, tipInterval, retryCount) {
   try {
     const res = await fetch('/api/generate-meal-plan', {
       method: 'POST',
@@ -157,6 +161,15 @@ async function generateMealPlan() {
       }
     }
   } catch (err) {
+    // 1回目のエラーは自動でリトライ
+    if (retryCount === 0) {
+      document.getElementById('loadingMsg').textContent = 'サーバーを起動中です。自動的に再試行しています...';
+      await new Promise(resolve => setTimeout(resolve, 4000));
+      document.getElementById('loadingMsg').textContent = 'AIがレシピを考えています...';
+      return fetchMealPlan(params, tipInterval, 1);
+    }
+
+    // 2回失敗したらエラー表示
     clearInterval(tipInterval);
     document.getElementById('loadingSection').classList.add('hidden');
     document.getElementById('step3').classList.remove('hidden');
