@@ -128,21 +128,40 @@ async function generateMealPlan() {
       body: JSON.stringify(params),
     });
 
-    const json = await res.json();
-    clearInterval(tipInterval);
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
 
-    if (!json.success) throw new Error(json.error);
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
 
-    mealPlanData = json.data;
-    document.getElementById('loadingSection').classList.add('hidden');
-    renderResult(mealPlanData, params);
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split('\n');
+      buffer = lines.pop();
 
+      for (const line of lines) {
+        if (!line.startsWith('data: ')) continue;
+        const data = JSON.parse(line.slice(6));
+        if (data.type === 'ping') continue;
+        if (data.type === 'result') {
+          clearInterval(tipInterval);
+          mealPlanData = data.data;
+          document.getElementById('loadingSection').classList.add('hidden');
+          renderResult(mealPlanData, params);
+          return;
+        }
+        if (data.type === 'error') {
+          throw new Error(data.error);
+        }
+      }
+    }
   } catch (err) {
     clearInterval(tipInterval);
     document.getElementById('loadingSection').classList.add('hidden');
     document.getElementById('step3').classList.remove('hidden');
     document.getElementById('stepsIndicator').classList.remove('hidden');
-    alert(`エラーが発生しました: ${err.message}\n\nAPIキーを確認してもう一度お試しください。`);
+    alert(`エラーが発生しました: ${err.message}\n\nもう一度お試しください。`);
   }
 }
 

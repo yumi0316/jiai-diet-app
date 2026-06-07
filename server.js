@@ -12,8 +12,21 @@ app.post('/api/generate-meal-plan', async (req, res) => {
   const { height, weight, age, gender, preferences, dislikes, allergies, mealStyle, goal } = req.body;
 
   if (!height || !weight || !age || !gender) {
-    return res.status(400).json({ success: false, error: '身長・体重・年齢・性別は必須です' });
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.write(`data: ${JSON.stringify({ type: 'error', error: '身長・体重・年齢・性別は必須です' })}\n\n`);
+    return res.end();
   }
+
+  // SSE で接続を維持しながらレスポンスを返す
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+  res.flushHeaders();
+
+  // 8秒ごとにpingを送って接続を維持
+  const heartbeat = setInterval(() => {
+    res.write('data: {"type":"ping"}\n\n');
+  }, 8000);
 
   const heightM = height / 100;
   const bmi = (weight / (heightM * heightM)).toFixed(1);
@@ -24,7 +37,6 @@ app.post('/api/generate-meal-plan', async (req, res) => {
   else if (bmi < 30) bmiCategory = '肥満（1度）';
   else bmiCategory = '肥満（2度以上）';
 
-  // Mifflin-St Jeor式で基礎代謝を計算
   let bmr;
   if (gender === 'female') {
     bmr = Math.round(10 * weight + 6.25 * height - 5 * age - 161);
@@ -32,7 +44,6 @@ app.post('/api/generate-meal-plan', async (req, res) => {
     bmr = Math.round(10 * weight + 6.25 * height - 5 * age + 5);
   }
 
-  // 活動係数1.375（軽い運動）
   const tdee = Math.round(bmr * 1.375);
 
   let targetCalories;
@@ -144,10 +155,14 @@ weekPlanは月曜日〜日曜日の7日分を作成してください。`;
       }
     }
 
-    res.json({ success: true, data: mealPlan });
+    clearInterval(heartbeat);
+    res.write(`data: ${JSON.stringify({ type: 'result', success: true, data: mealPlan })}\n\n`);
+    res.end();
   } catch (error) {
     console.error('Error:', error.message);
-    res.status(500).json({ success: false, error: error.message });
+    clearInterval(heartbeat);
+    res.write(`data: ${JSON.stringify({ type: 'error', success: false, error: error.message })}\n\n`);
+    res.end();
   }
 });
 
