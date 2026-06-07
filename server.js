@@ -135,15 +135,26 @@ app.post('/api/generate-meal-plan', async (req, res) => {
 weekPlanは月曜日〜日曜日の7日分を作成してください。`;
 
   try {
-    const message = await client.messages.create({
-      model: 'claude-sonnet-4-6',
-      max_tokens: 8000,
+    // ストリーミングで生成しながらリアルタイム進捗を送る
+    const stream = client.messages.stream({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 6000,
       messages: [{ role: 'user', content: prompt }]
     });
 
-    const content = message.content[0].text.trim();
+    let fullText = '';
+    for await (const chunk of stream) {
+      if (chunk.type === 'content_block_delta' && chunk.delta.type === 'text_delta') {
+        fullText += chunk.delta.text;
+        // 進捗をリアルタイムで送信（推定5000文字で100%）
+        const progress = Math.min(Math.round((fullText.length / 5000) * 100), 95);
+        res.write(`data: ${JSON.stringify({ type: 'progress', progress })}\n\n`);
+      }
+    }
 
+    // JSON をパースして送信
     let mealPlan;
+    const content = fullText.trim();
     try {
       mealPlan = JSON.parse(content);
     } catch {

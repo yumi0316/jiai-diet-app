@@ -148,6 +148,11 @@ async function fetchMealPlan(params, tipInterval, retryCount) {
         if (!line.startsWith('data: ')) continue;
         const data = JSON.parse(line.slice(6));
         if (data.type === 'ping') continue;
+        if (data.type === 'progress') {
+          document.getElementById('loadingFill').style.width = data.progress + '%';
+          document.getElementById('loadingMsg').textContent = `レシピを生成中... ${data.progress}%`;
+          continue;
+        }
         if (data.type === 'result') {
           clearInterval(tipInterval);
           mealPlanData = data.data;
