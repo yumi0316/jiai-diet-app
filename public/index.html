@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>自愛ダイエット｜週間食事プランメーカー</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ヘッダー -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo">
+        <span class="logo-icon">🌸</span>
+        <span class="logo-text">自愛ダイエット</span>
+      </div>
+      <p class="logo-sub">週間食事プランメーカー</p>
+    </div>
+  </header>
+
+  <!-- メインコンテンツ -->
+  <main class="main">
+
+    <!-- ステップインジケーター -->
+    <div class="steps-indicator" id="stepsIndicator">
+      <div class="step-item active" id="stepDot1">
+        <div class="step-dot">1</div>
+        <span class="step-label">プロフィール</span>
+      </div>
+      <div class="step-line"></div>
+      <div class="step-item" id="stepDot2">
+        <div class="step-dot">2</div>
+        <span class="step-label">食の好み</span>
+      </div>
+      <div class="step-line"></div>
+      <div class="step-item" id="stepDot3">
+        <div class="step-dot">3</div>
+        <span class="step-label">目標設定</span>
+      </div>
+    </div>
+
+    <!-- STEP 1: プロフィール -->
+    <section class="card" id="step1">
+      <div class="card-header">
+        <h2 class="card-title">あなたのプロフィール</h2>
+        <p class="card-desc">あなたに最適な食事プランを作るために、基本情報を教えてください。</p>
+      </div>
+
+      <div class="form-group">
+        <label class="label">性別</label>
+        <div class="radio-group">
+          <label class="radio-card">
+            <input type="radio" name="gender" value="female" checked>
+            <span class="radio-inner">
+              <span class="radio-icon">👩</span>
+              <span>女性</span>
+            </span>
+          </label>
+          <label class="radio-card">
+            <input type="radio" name="gender" value="male">
+            <span class="radio-inner">
+              <span class="radio-icon">👨</span>
+              <span>男性</span>
+            </span>
+          </label>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="label" for="age">年齢</label>
+          <div class="input-wrap">
+            <input type="number" id="age" class="input" placeholder="例：35" min="15" max="80">
+            <span class="input-unit">歳</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="label" for="height">身長</label>
+          <div class="input-wrap">
+            <input type="number" id="height" class="input" placeholder="例：158" min="140" max="200">
+            <span class="input-unit">cm</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="label" for="weight">体重</label>
+        <div class="input-wrap half">
+          <input type="number" id="weight" class="input" placeholder="例：58" min="30" max="200" step="0.1">
+          <span class="input-unit">kg</span>
+        </div>
+        <div class="bmi-display" id="bmiDisplay" style="display:none;">
+          <span class="bmi-label">BMI</span>
+          <span class="bmi-value" id="bmiValue">—</span>
+          <span class="bmi-category" id="bmiCategory">—</span>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="goToStep(2)">次へ →</button>
+      </div>
+    </section>
+
+    <!-- STEP 2: 食の好み -->
+    <section class="card hidden" id="step2">
+      <div class="card-header">
+        <h2 class="card-title">食の好みを教えてください</h2>
+        <p class="card-desc">あなたが楽しく続けられる食事プランを作るために教えてください。</p>
+      </div>
+
+      <div class="form-group">
+        <label class="label">好きな食事スタイル</label>
+        <div class="select-grid">
+          <label class="select-card">
+            <input type="radio" name="mealStyle" value="japanese" checked>
+            <span class="select-inner">
+              <span class="select-icon">🍱</span>
+              <span class="select-name">和食中心</span>
+              <span class="select-desc">ご飯・味噌汁・おかず</span>
+            </span>
+          </label>
+          <label class="select-card">
+            <input type="radio" name="mealStyle" value="western">
+            <span class="select-inner">
+              <span class="select-icon">🍝</span>
+              <span class="select-name">洋食中心</span>
+              <span class="select-desc">パン・パスタ・サラダ</span>
+            </span>
+          </label>
+          <label class="select-card">
+            <input type="radio" name="mealStyle" value="chinese">
+            <span class="select-inner">
+              <span class="select-icon">🥢</span>
+              <span class="select-name">中華・アジア系</span>
+              <span class="select-desc">炒め物・スープ・丼</span>
+            </span>
+          </label>
+          <label class="select-card">
+            <input type="radio" name="mealStyle" value="mixed">
+            <span class="select-inner">
+              <span class="select-icon">🌈</span>
+              <span class="select-name">なんでも</span>
+              <span class="select-desc">バランスよく何でも</span>
+            </span>
+          </label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="label" for="preferences">好きな食べ物・食材（任意）</label>
+        <textarea id="preferences" class="textarea" placeholder="例：鶏肉、豆腐、野菜全般、魚料理、サーモン など"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label class="label" for="dislikes">苦手な食べ物・食材（任意）</label>
+        <textarea id="dislikes" class="textarea" placeholder="例：レバー、納豆、セロリ など"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label class="label" for="allergies">アレルギー・絶対に除外したい食材（任意）</label>
+        <textarea id="allergies" class="textarea" placeholder="例：えび、小麦、乳製品 など&#10;※アレルギーがある場合は必ず記入してください"></textarea>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-outline" onclick="goToStep(1)">← 戻る</button>
+        <button class="btn btn-primary" onclick="goToStep(3)">次へ →</button>
+      </div>
+    </section>
+
+    <!-- STEP 3: 目標 -->
+    <section class="card hidden" id="step3">
+      <div class="card-header">
+        <h2 class="card-title">目標を教えてください</h2>
+        <p class="card-desc">自愛ダイエットは無理せず、自分のペースで進めます。</p>
+      </div>
+
+      <div class="form-group">
+        <label class="label">今の目標は？</label>
+        <div class="goal-grid">
+          <label class="goal-card">
+            <input type="radio" name="goal" value="lose">
+            <span class="goal-inner">
+              <span class="goal-icon">🌱</span>
+              <span class="goal-name">無理なく痩せたい</span>
+              <span class="goal-desc">目標カロリーより少し少なめの食事プランを作ります</span>
+            </span>
+          </label>
+          <label class="goal-card">
+            <input type="radio" name="goal" value="maintain" checked>
+            <span class="goal-inner">
+              <span class="goal-icon">⚖️</span>
+              <span class="goal-name">体重を維持したい</span>
+              <span class="goal-desc">消費カロリーに合わせた食事プランを作ります</span>
+            </span>
+          </label>
+          <label class="goal-card">
+            <input type="radio" name="goal" value="gain">
+            <span class="goal-inner">
+              <span class="goal-icon">💪</span>
+              <span class="goal-name">健康的に増やしたい</span>
+              <span class="goal-desc">しっかり栄養が取れる食事プランを作ります</span>
+            </span>
+          </label>
+        </div>
+      </div>
+
+      <div class="info-box">
+        <p>🌸 <strong>自愛ポイント：</strong>どの目標を選んでも、「楽しく食べる」を最優先にしたレシピを提案します。食べることを我慢するダイエットではありません。</p>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-outline" onclick="goToStep(2)">← 戻る</button>
+        <button class="btn btn-generate" onclick="generateMealPlan()">
+          <span>🌸 週間食事プランを作る</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ローディング -->
+    <section class="card hidden" id="loadingSection">
+      <div class="loading-inner">
+        <div class="loading-flower">🌸</div>
+        <h3 class="loading-title">あなただけの食事プランを作っています</h3>
+        <p class="loading-msg" id="loadingMsg">AIが最適なレシピを考えています...</p>
+        <div class="loading-bar">
+          <div class="loading-fill" id="loadingFill"></div>
+        </div>
+        <div class="loading-tips" id="loadingTips">
+          <p>💡 <span id="tipText">食べることを楽しむことが、続けるための一番の秘訣です。</span></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 結果表示 -->
+    <section class="hidden" id="resultSection">
+
+      <!-- プロフィールサマリー -->
+      <div class="profile-summary" id="profileSummary"></div>
+
+      <!-- 週間メニュー -->
+      <div class="week-header">
+        <h2 class="week-title">🗓 週間食事プラン</h2>
+        <div class="week-actions">
+          <button class="btn-small btn-outline-small" onclick="printPlan()">🖨 印刷</button>
+          <button class="btn-small btn-outline-small" onclick="resetForm()">🔄 作り直す</button>
+        </div>
+      </div>
+
+      <!-- 曜日タブ -->
+      <div class="day-tabs" id="dayTabs"></div>
+
+      <!-- 食事カード -->
+      <div class="meals-container" id="mealsContainer"></div>
+
+    </section>
+
+  </main>
+
+  <!-- レシピモーダル -->
+  <div class="modal-overlay hidden" id="modalOverlay" onclick="closeModal()">
+    <div class="modal" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="closeModal()">✕</button>
+      <div class="modal-content" id="modalContent"></div>
+    </div>
+  </div>
+
+  <!-- フッター -->
+  <footer class="footer">
+    <p>🌸 自愛ダイエット — 自分を愛することから始める、やさしい食習慣</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
