@@ -158,9 +158,17 @@ weekPlanは月曜日〜日曜日の7日分を作成してください。`;
     try {
       mealPlan = JSON.parse(content);
     } catch {
+      // JSONの前後に余分なテキストがある場合は取り除く
       const jsonMatch = content.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
-        mealPlan = JSON.parse(jsonMatch[0]);
+        try {
+          mealPlan = JSON.parse(jsonMatch[0]);
+        } catch {
+          // 末尾のカンマなど軽微な問題を修正して再試行
+          const cleaned = jsonMatch[0]
+            .replace(/,(\s*[}\]])/g, '$1');
+          mealPlan = JSON.parse(cleaned);
+        }
       } else {
         throw new Error('レシピの生成に失敗しました。もう一度お試しください。');
       }

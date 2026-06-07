@@ -149,8 +149,11 @@ async function fetchMealPlan(params, tipInterval, retryCount) {
         const data = JSON.parse(line.slice(6));
         if (data.type === 'ping') continue;
         if (data.type === 'progress') {
-          document.getElementById('loadingFill').style.width = data.progress + '%';
-          document.getElementById('loadingMsg').textContent = `レシピを生成中... ${data.progress}%`;
+          // リトライ中はプログレスバーを更新しない（95%のまま維持）
+          if (retryCount === 0) {
+            document.getElementById('loadingFill').style.width = data.progress + '%';
+            document.getElementById('loadingMsg').textContent = `レシピを生成中... ${data.progress}%`;
+          }
           continue;
         }
         if (data.type === 'result') {
@@ -166,11 +169,10 @@ async function fetchMealPlan(params, tipInterval, retryCount) {
       }
     }
   } catch (err) {
-    // 1回目のエラーは自動でリトライ
+    // 1回目のエラーは自動でリトライ（プログレスバーはそのまま）
     if (retryCount === 0) {
-      document.getElementById('loadingMsg').textContent = 'サーバーを起動中です。自動的に再試行しています...';
-      await new Promise(resolve => setTimeout(resolve, 4000));
-      document.getElementById('loadingMsg').textContent = 'AIがレシピを考えています...';
+      document.getElementById('loadingMsg').textContent = 'もう少しで完成です！';
+      await new Promise(resolve => setTimeout(resolve, 3000));
       return fetchMealPlan(params, tipInterval, 1);
     }
 
